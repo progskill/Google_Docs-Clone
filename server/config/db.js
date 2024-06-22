@@ -4,7 +4,8 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 
 dotenv.config();
-MONGO_URI = "add Your Mongo URL connection string here";
+MONGO_URI =
+  "mongodb+srv://evansnyamai98:QN1BGOyOrogmahNQ@cluster0.lcgzenw.mongodb.net/ProjectY?retryWrites=true&w=majority&appName=Cluster0";
 
 const connectDB = async () => {
   try {
