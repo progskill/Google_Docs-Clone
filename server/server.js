@@ -34,5 +34,46 @@ app.post("/api/docs/:id", async (req, res) => {
   res.json(newDocument);
 });
 
+// EndPoint  to get a specific document By Id
+// Endpoint to get a specific document by ID
+app.get("/api/docs/:id", async (req, res) => {
+  const { id } = req.params;
+  const document = await Document.findById(id);
+  res.json(document);
+});
+
+io.on("connection", (socket) => {
+  console.log("New client connected");
+
+  socket.on("join", async (docId) => {
+    socket.join(docId);
+    console.log(`Client joined room: ${docId}`);
+
+    // Load the document content from the database
+    const document = await Document.findById(docId);
+    if (document) {
+      socket.emit("receiveEdit", document.content);
+    }
+  });
+
+  socket.on("edit", async (data) => {
+    const { docId, content } = data;
+
+    // Save or update the document content in the database
+    const document = await Document.findById(docId);
+    if (document) {
+      document.content = content;
+      document.versionHistory.push({ content });
+      await document.save();
+    }
+
+    // Broadcast the changes to other clients in the same room
+    socket.to(docId).emit("receiveEdit", content);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+  });
+});
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => console.log(`Server started on port:  ${PORT}`));
