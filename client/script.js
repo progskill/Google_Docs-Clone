@@ -7,6 +7,17 @@ const editor = document.getElementById("editor");
 const backBtn = document.getElementById("back-btn");
 let currentDocId = null;
 
+documentList.addEventListener("DOMContentLoaded", () => {
+  document
+    .getElementById("create-document-btn")
+    .addEventListener("click", async () => {
+      const title = promt("Title");
+      if (!title) return;
+      window.location.href = `/edit.html?docId=${docId}`;
+    });
+  fetchDocuments();
+});
+
 // Create new Document
 async function createNewDocument() {
   const title = prompt("Enter document title:");
@@ -17,7 +28,7 @@ async function createNewDocument() {
       body: JSON.stringify({ title }),
     });
     const newDocument = await response.json();
-    //   fetchDocuments();
+    fetchDocuments();
     window.location.href = `/edit.html?docId=${newDocument._id}`;
   }
 }
